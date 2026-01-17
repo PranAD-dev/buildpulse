@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
+import { FloatingModel } from "@/components/landing/floating-model"
 
 export function Hero() {
   return (
@@ -36,11 +37,8 @@ export function Hero() {
               </Button>
             </div>
           </div>
-          <div className="relative">
-            <div className="absolute -inset-4 bg-accent/5 rounded-3xl blur-3xl" />
-            <div className="relative bg-card rounded-2xl border border-border shadow-xl overflow-hidden">
-              <img src="/modern-construction-dashboard-interface-with-progr.jpg" alt="BuildPulse Dashboard Preview" className="w-full h-auto" />
-            </div>
+          <div className="relative h-[600px]">
+            <FloatingModel />
           </div>
         </div>
       </div>

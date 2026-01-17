@@ -1,10 +1,33 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 import { ProjectCard } from "@/components/dashboard/project-card"
 import { EmptyState } from "@/components/dashboard/empty-state"
-import { mockProjects } from "@/lib/mock-data"
+import { Loader2 } from 'lucide-react'
+import type { Project } from '@/lib/supabase'
 
 export default function DashboardPage() {
-  const projects = mockProjects
+  const [projects, setProjects] = useState<Project[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadProjects() {
+      try {
+        const response = await fetch('/api/projects')
+        if (response.ok) {
+          const data = await response.json()
+          setProjects(data)
+        }
+      } catch (error) {
+        console.error('Failed to load projects:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadProjects()
+  }, [])
 
   return (
     <div className="min-h-screen bg-muted/20">
@@ -15,7 +38,11 @@ export default function DashboardPage() {
           <p className="text-muted-foreground">Track and manage your construction progress</p>
         </div>
 
-        {projects.length === 0 ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-accent" />
+          </div>
+        ) : projects.length === 0 ? (
           <EmptyState />
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
