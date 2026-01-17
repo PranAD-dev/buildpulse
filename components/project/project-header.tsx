@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Video } from "lucide-react"
+import { ProjectActions } from "./project-actions"
 import type { Project } from "@/lib/types"
 
 interface ProjectHeaderProps {
@@ -34,6 +35,7 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
               >
                 {project.status === "on-track" ? "On Track" : "Behind Schedule"}
               </Badge>
+              <ProjectActions projectId={project.id} projectName={project.name} />
             </div>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <span>

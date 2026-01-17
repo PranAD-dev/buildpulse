@@ -152,25 +152,12 @@ export default function NewProjectPage() {
     setIsCreating(true)
 
     try {
-      // Step 1: Upload 3D model if provided
+      // Step 1: For 3D models, store data URL directly (avoid Supabase 50MB limit)
+      // In production, you'd use a dedicated file storage service
       let modelUrl: string | null = null
       if (uploadType === 'model' && model3D) {
-        const modelResponse = await fetch('/api/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            dataUrl: model3D,
-            fileName: `${projectName.replace(/[^a-zA-Z0-9]/g, '_')}.glb`,
-            bucket: 'MODELS',
-          }),
-        })
-
-        if (!modelResponse.ok) {
-          throw new Error('Failed to upload 3D model')
-        }
-
-        const { url } = await modelResponse.json()
-        modelUrl = url
+        // Just use the data URL directly for now (stored in browser/DB)
+        modelUrl = model3D
       }
 
       // Step 2: Create project
@@ -195,33 +182,19 @@ export default function NewProjectPage() {
       if (uploadType === 'images') {
         // Create interior rooms
         for (const room of interiorRooms) {
-          // Upload first image as reference (or you could upload all)
+          // Use first image as reference (store data URL directly for hackathon)
           const firstImage = room.images[0]
           if (firstImage) {
-            const imageResponse = await fetch('/api/upload', {
+            // Create room with data URL (for hackathon - production would use proper storage)
+            await fetch('/api/rooms', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                dataUrl: firstImage.data,
-                fileName: `${room.name.replace(/[^a-zA-Z0-9]/g, '_')}.jpg`,
-                bucket: 'REFERENCE_IMAGES',
+                project_id: project.id,
+                name: room.name,
+                reference_image_url: firstImage.data,
               }),
             })
-
-            if (imageResponse.ok) {
-              const { url } = await imageResponse.json()
-
-              // Create room
-              await fetch('/api/rooms', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  project_id: project.id,
-                  name: room.name,
-                  reference_image_url: url,
-                }),
-              })
-            }
           }
         }
       }

@@ -1,93 +1,110 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
-import type { Project } from '@/lib/supabase'
+import { connectDB, Project, Room } from '@/lib/mongodb'
 
 // GET /api/projects/[id] - Get single project with its rooms
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params
+    await connectDB()
+    const { id } = await params
 
-    // Get project
-    const { data: project, error: projectError } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('id', id)
-      .single()
+    console.log('Fetching project with ID:', id)
 
-    if (projectError) {
-      return NextResponse.json({ error: projectError.message }, { status: 500 })
-    }
+    // Get project from MongoDB
+    const project = await Project.findById(id).lean()
+
+    console.log('Project found:', project ? 'yes' : 'no')
 
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 })
     }
 
     // Get rooms for this project
-    const { data: rooms, error: roomsError } = await supabase
-      .from('rooms')
-      .select('*')
-      .eq('project_id', id)
-      .order('created_at', { ascending: true })
+    const rooms = await Room.find({ project_id: id }).sort({ created_at: 1 }).lean()
 
-    if (roomsError) {
-      return NextResponse.json({ error: roomsError.message }, { status: 500 })
-    }
+    // Format rooms
+    const formattedRooms = rooms.map((r: any) => ({
+      ...r,
+      id: r._id.toString(),
+      _id: undefined,
+    }))
+
+    // Model URL is now a local path like /uploads/filename.glb
+    // Files are served directly from public/uploads/ folder
+    console.log('Returning project data with model_url:', project.model_url)
 
     return NextResponse.json({
       ...project,
-      rooms: rooms || [],
+      id: project._id.toString(),
+      _id: undefined,
+      model_url: project.model_url,
+      rooms: formattedRooms,
     })
   } catch (error: any) {
+    console.error('GET /api/projects/[id] error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
 
 // PUT /api/projects/[id] - Update project
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params
+    await connectDB()
+    const { id } = await params
     const body = await request.json()
 
-    const { data, error } = await supabase
-      .from('projects')
-      .update({
-        name: body.name,
-        reference_type: body.reference_type,
-        model_url: body.model_url,
-        target_completion_date: body.target_completion_date,
-        overall_progress: body.overall_progress,
-      })
-      .eq('id', id)
-      .select()
-      .single()
+    const updateData: any = {}
+    if (body.name !== undefined) updateData.name = body.name
+    if (body.reference_type !== undefined) updateData.reference_type = body.reference_type
+    if (body.model_url !== undefined) updateData.model_url = body.model_url
+    if (body.target_completion_date !== undefined) updateData.target_completion_date = body.target_completion_date
+    if (body.overall_progress !== undefined) updateData.overall_progress = body.overall_progress
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
-    }
+    const project = await Project.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true, lean: true }
+    )
 
-    if (!data) {
+    if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 })
     }
 
-    return NextResponse.json(data as Project)
+    return NextResponse.json({
+      ...project,
+      id: project._id.toString(),
+      _id: undefined,
+    })
   } catch (error: any) {
+    console.error('PUT /api/projects/[id] error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
 
 // DELETE /api/projects/[id] - Delete project
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params
+    await connectDB()
+    const { id } = await params
 
-    const { error } = await supabase.from('projects').delete().eq('id', id)
+    // Get project to find model file path
+    const project = await Project.findById(id).lean()
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    if (!project) {
+      return NextResponse.json({ error: 'Project not found' }, { status: 404 })
     }
+
+    // Delete the project from MongoDB
+    await Project.findByIdAndDelete(id)
+
+    // Also delete associated rooms
+    await Room.deleteMany({ project_id: id })
+
+    // TODO: Delete the 3D model file from disk if it exists
+    // We can add this later using deleteFromLocalStorage()
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
+    console.error('DELETE /api/projects/[id] error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }

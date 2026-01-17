@@ -1,27 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
-import type { Room } from '@/lib/supabase'
+import { connectDB, Room } from '@/lib/mongodb'
 
 // GET /api/rooms?project_id=xxx - List rooms (optionally filtered by project)
 export async function GET(request: NextRequest) {
   try {
+    await connectDB()
     const { searchParams } = new URL(request.url)
     const projectId = searchParams.get('project_id')
 
-    let query = supabase.from('rooms').select('*').order('created_at', { ascending: true })
+    const filter = projectId ? { project_id: projectId } : {}
+    const rooms = await Room.find(filter).sort({ created_at: 1 }).lean()
 
-    if (projectId) {
-      query = query.eq('project_id', projectId)
-    }
+    const formattedRooms = rooms.map((r: any) => ({
+      ...r,
+      id: r._id.toString(),
+      _id: undefined,
+    }))
 
-    const { data, error } = await query
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
-    }
-
-    return NextResponse.json(data as Room[])
+    return NextResponse.json(formattedRooms)
   } catch (error: any) {
+    console.error('GET /api/rooms error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
@@ -29,26 +27,27 @@ export async function GET(request: NextRequest) {
 // POST /api/rooms - Create new room
 export async function POST(request: NextRequest) {
   try {
+    await connectDB()
     const body = await request.json()
 
-    const { data, error } = await supabase
-      .from('rooms')
-      .insert({
-        project_id: body.project_id,
-        name: body.name,
-        reference_image_url: body.reference_image_url || null,
-        model_camera_position: body.model_camera_position || null,
-        current_percent: 0,
-      })
-      .select()
-      .single()
+    const room = await Room.create({
+      project_id: body.project_id,
+      name: body.name,
+      reference_image_url: body.reference_image_url || null,
+      model_camera_position: body.model_camera_position || null,
+      current_percent: 0,
+    })
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
-    }
-
-    return NextResponse.json(data as Room, { status: 201 })
+    return NextResponse.json(
+      {
+        ...room.toObject(),
+        id: room._id.toString(),
+        _id: undefined,
+      },
+      { status: 201 }
+    )
   } catch (error: any) {
+    console.error('POST /api/rooms error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
