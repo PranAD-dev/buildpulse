@@ -1,5 +1,6 @@
 import { Upload, Camera, TrendingUp } from "lucide-react"
 import { InteractiveCard } from "@/components/3d/interactive-card"
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
 
 const steps = [
   {
@@ -23,26 +24,28 @@ export function HowItWorks() {
   return (
     <section id="how-it-works" className="py-20 px-4 bg-muted/30">
       <div className="container mx-auto">
-        <div className="text-center mb-12">
+        <ScrollReveal className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">How It Works</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Three simple steps to transform your construction progress tracking
           </p>
-        </div>
+        </ScrollReveal>
         <div className="grid md:grid-cols-3 gap-8">
           {steps.map((step, index) => (
-            <InteractiveCard key={step.title} className="relative" intensity={8}>
-              <div className="bg-card rounded-2xl p-8 border-2 border-border h-full shadow-lg">
-                <div className="w-14 h-14 rounded-xl bg-accent flex items-center justify-center mb-6 shadow-md">
-                  <step.icon className="w-7 h-7 text-white" />
+            <ScrollReveal key={step.title} delay={index * 150}>
+              <InteractiveCard className="relative" intensity={8}>
+                <div className="bg-card rounded-2xl p-8 border-2 border-border h-full shadow-lg">
+                  <div className="w-14 h-14 rounded-xl bg-accent flex items-center justify-center mb-6 shadow-md">
+                    <step.icon className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-base font-bold shadow-lg">
+                    {index + 1}
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground mb-3">{step.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{step.description}</p>
                 </div>
-                <div className="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-base font-bold shadow-lg">
-                  {index + 1}
-                </div>
-                <h3 className="text-xl font-semibold text-foreground mb-3">{step.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{step.description}</p>
-              </div>
-            </InteractiveCard>
+              </InteractiveCard>
+            </ScrollReveal>
           ))}
         </div>
       </div>
