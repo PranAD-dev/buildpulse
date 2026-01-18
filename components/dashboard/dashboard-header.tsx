@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Building2, Plus } from "lucide-react"
+import { AuthButton } from "@/components/auth/auth-button"
 
 export function DashboardHeader() {
   return (
@@ -12,12 +13,15 @@ export function DashboardHeader() {
           </div>
           <span className="font-semibold text-lg text-primary">BuildPulse</span>
         </Link>
-        <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2">
-          <Link href="/new">
-            <Plus className="w-4 h-4" />
-            New Project
-          </Link>
-        </Button>
+        <div className="flex items-center gap-4">
+          <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2">
+            <Link href="/new">
+              <Plus className="w-4 h-4" />
+              New Project
+            </Link>
+          </Button>
+          <AuthButton />
+        </div>
       </div>
     </header>
   )

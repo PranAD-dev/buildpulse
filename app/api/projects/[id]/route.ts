@@ -32,11 +32,26 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     // Files are served directly from public/uploads/ folder
     console.log('Returning project data with model_url:', project.model_url)
 
+    // If project has progress but no history, seed it with current progress
+    let progressHistory = project.progress_history || []
+    if (progressHistory.length === 0 && project.overall_progress > 0) {
+      // Add an initial entry with project creation date and a current entry
+      progressHistory = [
+        { date: project.created_at, progress: 0 },
+        { date: new Date(), progress: project.overall_progress },
+      ]
+      // Save this to DB for future consistency
+      await Project.findByIdAndUpdate(id, {
+        $set: { progress_history: progressHistory },
+      })
+    }
+
     return NextResponse.json({
       ...project,
       id: project._id.toString(),
       _id: undefined,
       model_url: project.model_url,
+      progress_history: progressHistory,
       rooms: formattedRooms,
     })
   } catch (error: any) {
@@ -59,9 +74,22 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     if (body.target_completion_date !== undefined) updateData.target_completion_date = body.target_completion_date
     if (body.overall_progress !== undefined) updateData.overall_progress = body.overall_progress
 
+    // Build the update operation
+    const updateOperation: any = { $set: updateData }
+
+    // If progress is being updated, add to progress history
+    if (body.overall_progress !== undefined) {
+      updateOperation.$push = {
+        progress_history: {
+          date: new Date(),
+          progress: body.overall_progress,
+        },
+      }
+    }
+
     const project = await Project.findByIdAndUpdate(
       id,
-      updateData,
+      updateOperation,
       { new: true, lean: true }
     )
 

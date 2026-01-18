@@ -21,6 +21,7 @@ export interface Project {
   progressHistory: { date: string; progress: number }[]
   totalBudget: number
   dailyDelayCost: number // Cost per day of delay (labor, equipment rental, financing, etc.)
+  reportVideoUrl?: string | null
 }
 
 export interface CheckInResult {

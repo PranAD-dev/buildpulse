@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
       model_url: modelUrl || null,
       target_completion_date: body.target_completion_date || null,
       overall_progress: 0,
+      budget: body.budget || 0,
     })
 
     return NextResponse.json(

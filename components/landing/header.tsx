@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Building2 } from "lucide-react"
+import { AuthButton } from "@/components/auth/auth-button"
 
 export function Header() {
   return (
@@ -23,9 +24,12 @@ export function Header() {
             Dashboard
           </Link>
         </nav>
-        <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
-          <Link href="/dashboard">Get Started</Link>
-        </Button>
+        <div className="flex items-center gap-4">
+          <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
+            <Link href="/dashboard">Get Started</Link>
+          </Button>
+          <AuthButton />
+        </div>
       </div>
     </header>
   )

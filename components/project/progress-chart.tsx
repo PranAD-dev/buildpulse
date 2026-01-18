@@ -12,8 +12,27 @@ interface ProgressChartProps {
 export function ProgressChart({ project }: ProgressChartProps) {
   const data = project.progressHistory.map((point) => ({
     date: new Date(point.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-    progress: point.progress,
+    progress: Math.round(point.progress),
   }))
+
+  // Show empty state if no progress history
+  if (data.length === 0) {
+    return (
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base font-medium flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-muted-foreground" />
+            Progress Velocity
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64 flex items-center justify-center text-muted-foreground">
+            <p>Progress history will appear here as you analyze zones</p>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card>

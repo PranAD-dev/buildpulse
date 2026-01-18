@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getFromGridFS } from '@/lib/gridfs'
 
 // GET /api/files/[id] - Get a file from GridFS
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = params
+    const { id } = await params
 
     const dataUrl = await getFromGridFS(id)
 

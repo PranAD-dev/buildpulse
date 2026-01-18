@@ -51,6 +51,15 @@ const ProjectSchema = new mongoose.Schema({
   model_url: { type: String }, // Can store large base64 strings
   target_completion_date: { type: Date },
   overall_progress: { type: Number, default: 0 },
+  budget: { type: Number, default: 0 },
+  report_video_id: { type: String },
+  report_video_url: { type: String },
+  progress_history: [
+    {
+      date: { type: Date, required: true },
+      progress: { type: Number, required: true },
+    },
+  ],
   created_at: { type: Date, default: Date.now },
 })
 
@@ -60,6 +69,7 @@ const RoomSchema = new mongoose.Schema({
   name: { type: String, required: true },
   reference_image_url: { type: String }, // Can store large base64 strings
   model_camera_position: { type: Object },
+  mesh_assignments: [{ type: String }], // Store mesh UUIDs assigned to this room
   current_percent: { type: Number, default: 0 },
   created_at: { type: Date, default: Date.now },
 })

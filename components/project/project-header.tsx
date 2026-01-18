@@ -1,8 +1,9 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Video } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { ProjectActions } from "./project-actions"
+import { GenerateReportButton } from "./generate-report-button"
 import type { Project } from "@/lib/types"
 
 interface ProjectHeaderProps {
@@ -46,10 +47,7 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
               </span>
             </div>
           </div>
-          <Button className="bg-primary hover:bg-primary/90 gap-2">
-            <Video className="w-4 h-4" />
-            Generate Report
-          </Button>
+          <GenerateReportButton projectId={project.id} projectName={project.name} existingVideoUrl={project.reportVideoUrl} />
         </div>
       </div>
     </div>

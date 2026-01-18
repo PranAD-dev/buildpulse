@@ -56,6 +56,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   // Format last updated
   const lastUpdated = new Date(projectData.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 
+  // Transform progress history from MongoDB format
+  const progressHistory = (projectData.progress_history || []).map((entry: any) => ({
+    date: entry.date,
+    progress: entry.progress,
+  }))
+
   const project = {
     id: projectData.id,
     name: projectData.name,
@@ -66,9 +72,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     lastUpdated,
     estimatedCompletion: targetDate,
     zones,
-    progressHistory: [],
-    totalBudget: 1500000,
+    progressHistory,
+    totalBudget: projectData.budget || 0,
     dailyDelayCost: 5000,
+    reportVideoUrl: projectData.report_video_url || null,
   }
 
   const formatBudget = (amount: number) => {
@@ -86,7 +93,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             {projectData.reference_type === '3d_model' && projectData.model_url && (
-              <ProjectModelViewer modelUrl={projectData.model_url} projectName={projectData.name} />
+              <ProjectModelViewer
+                modelUrl={projectData.model_url}
+                projectName={projectData.name}
+                projectId={projectData.id}
+              />
             )}
 
             <div>

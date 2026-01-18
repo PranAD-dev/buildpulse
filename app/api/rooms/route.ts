@@ -35,7 +35,8 @@ export async function POST(request: NextRequest) {
       name: body.name,
       reference_image_url: body.reference_image_url || null,
       model_camera_position: body.model_camera_position || null,
-      current_percent: 0,
+      mesh_assignments: body.mesh_assignments || [],
+      current_percent: body.current_percent || 0,
     })
 
     return NextResponse.json(

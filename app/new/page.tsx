@@ -27,6 +27,7 @@ export default function NewProjectPage() {
   // Step 1: Project details
   const [projectName, setProjectName] = useState("")
   const [targetDate, setTargetDate] = useState("")
+  const [budget, setBudget] = useState("")
 
   // Step 2: 3D Model or Images
   const [uploadType, setUploadType] = useState<"model" | "images">("model")
@@ -169,6 +170,7 @@ export default function NewProjectPage() {
           reference_type: uploadType === 'model' ? '3d_model' : 'images',
           model_url: modelUrl,
           target_completion_date: targetDate,
+          budget: budget ? parseFloat(budget) : 0,
         }),
       })
 
@@ -268,6 +270,16 @@ export default function NewProjectPage() {
                   type="date"
                   value={targetDate}
                   onChange={(e) => setTargetDate(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="budget">Project Budget ($)</Label>
+                <Input
+                  id="budget"
+                  type="number"
+                  placeholder="e.g., 1500000"
+                  value={budget}
+                  onChange={(e) => setBudget(e.target.value)}
                 />
               </div>
               <div className="flex justify-end">

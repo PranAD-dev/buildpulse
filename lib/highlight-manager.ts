@@ -1,9 +1,23 @@
 import * as THREE from 'three'
 
+// Predefined room colors for visual distinction
+export const ROOM_COLORS: Record<string, number> = {
+  'living-room': 0x4ade80, // green
+  'kitchen': 0xfbbf24, // amber
+  'bedroom': 0x60a5fa, // blue
+  'bathroom': 0xa78bfa, // purple
+  'office': 0xf472b6, // pink
+  'dining': 0xfb923c, // orange
+  'garage': 0x94a3b8, // slate
+  'default': 0x00ff88, // bright green (selection)
+  'hover': 0xffffff, // white (hover)
+}
+
 export class HighlightManager {
   private originalMaterials: Map<string, THREE.Material | THREE.Material[]> = new Map()
   private highlightedMeshes: Set<THREE.Mesh> = new Set()
   private highlightMaterial: THREE.MeshStandardMaterial
+  private roomMaterials: Map<string, THREE.MeshStandardMaterial> = new Map()
 
   constructor() {
     // Create a reusable highlight material with emissive glow
@@ -15,27 +29,56 @@ export class HighlightManager {
       opacity: 0.8,
       side: THREE.DoubleSide,
     })
+
+    // Pre-create materials for each room type
+    Object.entries(ROOM_COLORS).forEach(([roomType, color]) => {
+      this.roomMaterials.set(
+        roomType,
+        new THREE.MeshStandardMaterial({
+          color,
+          emissive: color,
+          emissiveIntensity: 0.4,
+          transparent: true,
+          opacity: 0.75,
+          side: THREE.DoubleSide,
+        })
+      )
+    })
+  }
+
+  /**
+   * Get material for a specific room type
+   */
+  getRoomMaterial(roomId: string): THREE.MeshStandardMaterial {
+    // Try to match room type from id
+    const normalizedId = roomId.toLowerCase().replace(/[_\s]/g, '-')
+    for (const key of Object.keys(ROOM_COLORS)) {
+      if (normalizedId.includes(key)) {
+        return this.roomMaterials.get(key)!
+      }
+    }
+    return this.roomMaterials.get('default')!
   }
 
   /**
    * Highlight a single mesh
    */
-  highlightMesh(mesh: THREE.Mesh): void {
+  highlightMesh(mesh: THREE.Mesh, roomId?: string): void {
     if (this.highlightedMeshes.has(mesh)) return
 
     // Store original material
     this.originalMaterials.set(mesh.uuid, mesh.material)
 
-    // Apply highlight material
-    mesh.material = this.highlightMaterial
+    // Apply highlight material (room-specific or default)
+    mesh.material = roomId ? this.getRoomMaterial(roomId) : this.highlightMaterial
     this.highlightedMeshes.add(mesh)
   }
 
   /**
    * Highlight multiple meshes (for material mode)
    */
-  highlightMeshes(meshes: THREE.Mesh[]): void {
-    meshes.forEach((mesh) => this.highlightMesh(mesh))
+  highlightMeshes(meshes: THREE.Mesh[], roomId?: string): void {
+    meshes.forEach((mesh) => this.highlightMesh(mesh, roomId))
   }
 
   /**
@@ -97,5 +140,17 @@ export class HighlightManager {
   dispose(): void {
     this.clearAll()
     this.highlightMaterial.dispose()
+    this.roomMaterials.forEach((mat) => mat.dispose())
+    this.roomMaterials.clear()
+  }
+
+  /**
+   * Set opacity for all highlight materials
+   */
+  setOpacity(opacity: number): void {
+    this.highlightMaterial.opacity = opacity
+    this.roomMaterials.forEach((mat) => {
+      mat.opacity = opacity
+    })
   }
 }
