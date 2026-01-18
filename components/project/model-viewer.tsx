@@ -47,7 +47,7 @@ export function ModelViewer({ modelUrl, zoneName, open, onOpenChange }: ModelVie
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl h-[80vh] p-0 overflow-hidden">
-        <DialogHeader className="absolute top-0 left-0 right-0 z-10 p-4 bg-gradient-to-b from-background/90 to-transparent">
+        <DialogHeader className="absolute top-0 left-0 right-0 z-10 p-4 bg-background/95 backdrop-blur-sm border-b border-border">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-foreground">{zoneName} - 3D Model</DialogTitle>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onOpenChange(false)}>

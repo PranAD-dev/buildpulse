@@ -18,6 +18,14 @@ export interface Room {
   referenceImageUrl: string | null // Target image showing completed state
   createdAt: number
   updatedAt: number
+  // AI analysis results
+  lastAnalysis?: {
+    confidence: 'high' | 'medium' | 'low'
+    visible_completed: string[]
+    still_missing: string[]
+    notes: string
+    analyzedAt: number
+  }
 }
 
 export interface RoomSuggestion {
@@ -219,6 +227,29 @@ export class RoomStore {
     const room = this.rooms.get(id)
     if (room) {
       room.progress = Math.min(100, Math.max(0, progress))
+      room.updatedAt = Date.now()
+      this.notifyListeners()
+    }
+  }
+
+  /**
+   * Store AI analysis results
+   */
+  setAnalysisResult(
+    id: string,
+    analysis: {
+      confidence: 'high' | 'medium' | 'low'
+      visible_completed: string[]
+      still_missing: string[]
+      notes: string
+    }
+  ): void {
+    const room = this.rooms.get(id)
+    if (room) {
+      room.lastAnalysis = {
+        ...analysis,
+        analyzedAt: Date.now(),
+      }
       room.updatedAt = Date.now()
       this.notifyListeners()
     }

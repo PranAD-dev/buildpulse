@@ -4,11 +4,17 @@ import { useEffect, useState } from 'react'
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 import { ProjectCard } from "@/components/dashboard/project-card"
 import { EmptyState } from "@/components/dashboard/empty-state"
+import { FloatingBackground } from "@/components/3d/floating-background"
 import { Loader2 } from 'lucide-react'
 import type { Project } from '@/lib/supabase'
 
+// Extended project type with delay status
+interface ProjectWithDelayStatus extends Project {
+  isDelayed?: boolean
+}
+
 export default function DashboardPage() {
-  const [projects, setProjects] = useState<Project[]>([])
+  const [projects, setProjects] = useState<ProjectWithDelayStatus[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -16,8 +22,31 @@ export default function DashboardPage() {
       try {
         const response = await fetch('/api/projects')
         if (response.ok) {
-          const data = await response.json()
-          setProjects(data)
+          const data: Project[] = await response.json()
+
+          // Fetch zone counts for each project to determine delay status
+          const projectsWithDelayStatus = await Promise.all(
+            data.map(async (project) => {
+              try {
+                const zonesRes = await fetch(`/api/rooms?project_id=${project.id}`)
+                const zones = zonesRes.ok ? await zonesRes.json() : []
+                const zoneCount = zones?.length || 0
+
+                // Check delay conditions: deadline <= 1 day AND has zones
+                const daysUntilDeadline = project.target_completion_date
+                  ? Math.ceil((new Date(project.target_completion_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+                  : null
+
+                const isDelayed = daysUntilDeadline !== null && daysUntilDeadline <= 1 && zoneCount > 0
+
+                return { ...project, isDelayed }
+              } catch {
+                return { ...project, isDelayed: false }
+              }
+            })
+          )
+
+          setProjects(projectsWithDelayStatus)
         }
       } catch (error) {
         console.error('Failed to load projects:', error)
@@ -30,9 +59,11 @@ export default function DashboardPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-muted/20">
-      <DashboardHeader />
-      <main className="container mx-auto px-4 py-8">
+    <div className="min-h-screen relative">
+      <FloatingBackground />
+      <div className="relative z-10 bg-background/50 backdrop-blur-sm min-h-screen">
+        <DashboardHeader />
+        <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-foreground mb-1">Your Projects</h1>
           <p className="text-muted-foreground">Track and manage your construction progress</p>
@@ -51,7 +82,8 @@ export default function DashboardPage() {
             ))}
           </div>
         )}
-      </main>
+        </main>
+      </div>
     </div>
   )
 }

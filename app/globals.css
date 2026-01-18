@@ -124,3 +124,34 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Scroll reveal animations */
+.scroll-reveal {
+  opacity: 0;
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.scroll-reveal-up {
+  transform: translateY(40px);
+}
+
+.scroll-reveal-down {
+  transform: translateY(-40px);
+}
+
+.scroll-reveal-left {
+  transform: translateX(40px);
+}
+
+.scroll-reveal-right {
+  transform: translateX(-40px);
+}
+
+.scroll-reveal-fade {
+  transform: none;
+}
+
+.scroll-reveal-visible {
+  opacity: 1;
+  transform: translateY(0) translateX(0);
+}

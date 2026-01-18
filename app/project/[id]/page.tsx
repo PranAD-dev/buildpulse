@@ -6,6 +6,7 @@ import { DelayCostCard } from "@/components/project/delay-cost-card"
 import { ZoneCard } from "@/components/project/zone-card"
 import { ProgressChart } from "@/components/project/progress-chart"
 import { ProjectModelViewer } from "@/components/project/project-model-viewer"
+import { calculateProjectPrediction } from "@/lib/ai-prediction"
 import type { Zone } from "@/lib/types"
 
 interface ProjectPageProps {
@@ -62,15 +63,25 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     progress: entry.progress,
   }))
 
+  // Calculate AI prediction for estimated completion
+  const prediction = projectData.target_completion_date
+    ? calculateProjectPrediction(
+        progressHistory,
+        projectData.overall_progress || 0,
+        projectData.target_completion_date
+      )
+    : null
+
   const project = {
     id: projectData.id,
     name: projectData.name,
     targetDate,
     overallProgress: projectData.overall_progress || 0,
-    status: (daysUntilDeadline > 0 ? "on-track" : "behind") as "on-track" | "behind",
+    status: prediction ? (prediction.isOnTrack ? "on-track" : "behind") : (daysUntilDeadline > 0 ? "on-track" : "behind") as "on-track" | "behind",
     daysUntilDeadline,
     lastUpdated,
-    estimatedCompletion: targetDate,
+    estimatedCompletion: prediction ? prediction.estimatedCompletionString : targetDate,
+    daysEarlyOrLate: prediction ? prediction.daysEarlyOrLate : 0,
     zones,
     progressHistory,
     totalBudget: projectData.budget || 0,

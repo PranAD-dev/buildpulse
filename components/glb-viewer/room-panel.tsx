@@ -135,7 +135,7 @@ export function RoomPanel({
   return (
     <div className="w-96 bg-card border-l border-border flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-border bg-gradient-to-r from-primary/10 to-transparent">
+      <div className="p-4 border-b-2 border-border bg-primary/5">
         <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
           <Home className="w-5 h-5 text-accent" />
           Component Progress Demo
@@ -585,6 +585,58 @@ export function RoomPanel({
                         </>
                       )}
                     </Button>
+                  )}
+
+                  {/* AI Analysis Results */}
+                  {room.lastAnalysis && (
+                    <div className="mt-3 space-y-2 p-3 bg-muted/50 rounded-lg border border-border">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-foreground flex items-center gap-1">
+                          <Sparkles className="w-3 h-3 text-primary" />
+                          AI Analysis
+                        </span>
+                        <Badge variant="outline" className={`text-xs ${getConfidenceColor(room.lastAnalysis.confidence)}`}>
+                          {room.lastAnalysis.confidence} confidence
+                        </Badge>
+                      </div>
+
+                      {/* Completed Items */}
+                      {room.lastAnalysis.visible_completed.length > 0 && (
+                        <div>
+                          <p className="text-xs font-medium text-green-600 mb-1 flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" />
+                            Completed
+                          </p>
+                          <ul className="text-xs text-muted-foreground space-y-0.5 pl-4">
+                            {room.lastAnalysis.visible_completed.map((item, i) => (
+                              <li key={i} className="list-disc">{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Missing Items */}
+                      {room.lastAnalysis.still_missing.length > 0 && (
+                        <div>
+                          <p className="text-xs font-medium text-red-500 mb-1 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            Still Missing
+                          </p>
+                          <ul className="text-xs text-muted-foreground space-y-0.5 pl-4">
+                            {room.lastAnalysis.still_missing.map((item, i) => (
+                              <li key={i} className="list-disc">{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Notes */}
+                      {room.lastAnalysis.notes && (
+                        <p className="text-xs text-muted-foreground italic border-t border-border pt-2 mt-2">
+                          {room.lastAnalysis.notes}
+                        </p>
+                      )}
+                    </div>
                   )}
 
                   {/* Mark Complete Button - only show if progress is >= 90% and < 100% */}

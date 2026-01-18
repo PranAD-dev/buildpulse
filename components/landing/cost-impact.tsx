@@ -1,10 +1,11 @@
-import { DollarSign, TrendingDown, AlertTriangle, Clock } from "lucide-react"
+import { DollarSign, TrendingDown, AlertTriangle, Clock, ExternalLink } from "lucide-react"
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
 
 export function CostImpact() {
   return (
     <section className="py-20 px-4 bg-red-50">
       <div className="container mx-auto">
-        <div className="text-center mb-12">
+        <ScrollReveal className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm font-medium mb-4">
             <AlertTriangle className="w-4 h-4" />
             The Hidden Cost of Delays
@@ -16,38 +17,45 @@ export function CostImpact() {
             Every day of delay compounds costs across labor, equipment, financing, and opportunity. BuildPulse helps you
             catch problems early—before they become expensive.
           </p>
-        </div>
+        </ScrollReveal>
 
         <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-card rounded-xl border border-red-200 p-6 text-center">
+          <ScrollReveal delay={100}>
+            <div className="bg-card rounded-xl border border-red-200 p-6 text-center">
             <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
               <DollarSign className="w-7 h-7 text-red-600" />
             </div>
             <p className="text-4xl font-bold text-red-600 mb-2">$15,000+</p>
             <p className="text-sm text-muted-foreground font-medium">Average Daily Delay Cost</p>
             <p className="text-xs text-muted-foreground mt-2">Labor standby, equipment rental, financing charges</p>
-          </div>
+            </div>
+          </ScrollReveal>
 
-          <div className="bg-card rounded-xl border border-red-200 p-6 text-center">
+          <ScrollReveal delay={200}>
+            <div className="bg-card rounded-xl border border-red-200 p-6 text-center">
             <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
               <Clock className="w-7 h-7 text-red-600" />
             </div>
             <p className="text-4xl font-bold text-red-600 mb-2">23 Days</p>
             <p className="text-sm text-muted-foreground font-medium">Average Project Delay</p>
             <p className="text-xs text-muted-foreground mt-2">Without real-time progress tracking</p>
-          </div>
+            </div>
+          </ScrollReveal>
 
-          <div className="bg-card rounded-xl border border-red-200 p-6 text-center">
+          <ScrollReveal delay={300}>
+            <div className="bg-card rounded-xl border border-red-200 p-6 text-center">
             <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
               <TrendingDown className="w-7 h-7 text-red-600" />
             </div>
             <p className="text-4xl font-bold text-red-600 mb-2">$345,000</p>
             <p className="text-sm text-muted-foreground font-medium">Typical Delay Cost Impact</p>
             <p className="text-xs text-muted-foreground mt-2">Per project, on average</p>
-          </div>
+            </div>
+          </ScrollReveal>
         </div>
 
-        <div className="bg-card rounded-2xl border border-border p-8 md:p-10">
+        <ScrollReveal delay={400}>
+          <div className="bg-card rounded-2xl border border-border p-8 md:p-10">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
               <h3 className="text-2xl font-bold text-primary mb-4">What a Single Week of Delay Really Costs</h3>
@@ -102,7 +110,47 @@ export function CostImpact() {
               <p className="text-xs text-muted-foreground mt-1">Average savings per project</p>
             </div>
           </div>
-        </div>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal delay={500} className="mt-12">
+          <div className="bg-muted/50 rounded-xl border border-border p-6">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 text-center">
+              Research Sources
+            </p>
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
+              <a
+                href="https://www.researchgate.net/publication/263506757_A_System_to_Track_Work_Progress_at_Construction_Jobsites"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 hover:text-primary transition-colors underline decoration-dotted underline-offset-2"
+              >
+                <ExternalLink className="w-3 h-3" />
+                Construction Progress Tracking Research
+              </a>
+              <span className="text-border">|</span>
+              <a
+                href="https://www.digitalconstructionweek.com/why-construction-projects-still-struggle-with-failure-costs/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 hover:text-primary transition-colors underline decoration-dotted underline-offset-2"
+              >
+                <ExternalLink className="w-3 h-3" />
+                Construction Project Failure Costs
+              </a>
+              <span className="text-border">|</span>
+              <a
+                href="https://www.unep.org/resources/report/building-materials-and-climate-constructing-new-future"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 hover:text-primary transition-colors underline decoration-dotted underline-offset-2"
+              >
+                <ExternalLink className="w-3 h-3" />
+                UNEP Building Materials Report
+              </a>
+            </div>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   )
