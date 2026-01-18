@@ -1,4 +1,5 @@
 import { Upload, Camera, TrendingUp } from "lucide-react"
+import { InteractiveCard } from "@/components/3d/interactive-card"
 
 const steps = [
   {
@@ -30,18 +31,18 @@ export function HowItWorks() {
         </div>
         <div className="grid md:grid-cols-3 gap-8">
           {steps.map((step, index) => (
-            <div key={step.title} className="relative">
-              <div className="bg-card rounded-2xl p-8 border border-border h-full hover:shadow-lg transition-shadow">
-                <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-6">
-                  <step.icon className="w-7 h-7 text-accent" />
+            <InteractiveCard key={step.title} className="relative" intensity={8}>
+              <div className="bg-card rounded-2xl p-8 border-2 border-border h-full shadow-lg">
+                <div className="w-14 h-14 rounded-xl bg-accent flex items-center justify-center mb-6 shadow-md">
+                  <step.icon className="w-7 h-7 text-white" />
                 </div>
-                <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
+                <div className="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-base font-bold shadow-lg">
                   {index + 1}
                 </div>
                 <h3 className="text-xl font-semibold text-foreground mb-3">{step.title}</h3>
-                <p className="text-muted-foreground">{step.description}</p>
+                <p className="text-muted-foreground leading-relaxed">{step.description}</p>
               </div>
-            </div>
+            </InteractiveCard>
           ))}
         </div>
       </div>

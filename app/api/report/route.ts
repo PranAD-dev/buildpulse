@@ -71,6 +71,53 @@ export async function POST(request: NextRequest) {
       projectStatus = 'At Risk'
     }
 
+    // Calculate financial impact of delays
+    // Industry standard: construction delays cost ~$100k-500k per day for large projects
+    // We'll use a conservative estimate based on budget size
+    const estimatedDailyDelayCost = project.budget
+      ? Math.round(project.budget * 0.001) // 0.1% of budget per day (conservative estimate)
+      : 100000 // Default $100k/day if no budget specified
+
+    // Calculate days ahead/behind based on progress vs time
+    const totalProjectDays = project.target_completion_date
+      ? Math.ceil((new Date(project.target_completion_date).getTime() - new Date(project.created_at).getTime()) / (1000 * 60 * 60 * 24))
+      : 365 // Default to 1 year
+
+    const daysPassed = project.target_completion_date
+      ? totalProjectDays - (daysRemaining || 0)
+      : 0
+
+    const expectedProgressByNow = totalProjectDays > 0 ? (daysPassed / totalProjectDays) * 100 : 0
+    const actualProgress = project.overall_progress || avgProgress
+    const progressDelta = actualProgress - expectedProgressByNow
+
+    // Estimate days ahead or behind
+    const daysAheadOrBehind = totalProjectDays > 0
+      ? Math.round((progressDelta / 100) * totalProjectDays)
+      : 0
+
+    // Calculate financial impact
+    let financialImpact = ''
+    let financialImpactAmount = 0
+
+    if (daysAheadOrBehind < 0) {
+      // Behind schedule - money potentially lost
+      financialImpactAmount = Math.abs(daysAheadOrBehind) * estimatedDailyDelayCost
+      const impactFormatted = financialImpactAmount >= 1000000
+        ? `$${(financialImpactAmount / 1000000).toFixed(2)} million`
+        : `$${(financialImpactAmount / 1000).toFixed(0)} thousand`
+      financialImpact = `⚠️ POTENTIAL COST OVERRUN: Project is approximately ${Math.abs(daysAheadOrBehind)} days behind schedule, representing potential additional costs of ${impactFormatted} (at ~$${(estimatedDailyDelayCost / 1000).toFixed(0)}k per day for labor, equipment rental, financing, and overhead).`
+    } else if (daysAheadOrBehind > 0) {
+      // Ahead of schedule - money saved
+      financialImpactAmount = daysAheadOrBehind * estimatedDailyDelayCost
+      const savingsFormatted = financialImpactAmount >= 1000000
+        ? `$${(financialImpactAmount / 1000000).toFixed(2)} million`
+        : `$${(financialImpactAmount / 1000).toFixed(0)} thousand`
+      financialImpact = `✅ COST SAVINGS: Project is approximately ${daysAheadOrBehind} days ahead of schedule, representing potential cost savings of ${savingsFormatted} in reduced labor, equipment rental, and overhead costs.`
+    } else {
+      financialImpact = `✓ ON SCHEDULE: Project is progressing as planned with no significant cost overruns or delays expected at this time.`
+    }
+
     // Create the prompt for the video
     const reportPrompt = `
 Create a professional construction project status report video for shareholders and stakeholders.
@@ -83,22 +130,29 @@ DAYS REMAINING: ${daysRemaining !== null ? (daysRemaining > 0 ? `${daysRemaining
 OVERALL STATUS: ${projectStatus}
 OVERALL PROGRESS: ${project.overall_progress || avgProgress}%
 
+FINANCIAL IMPACT:
+${financialImpact}
+
 ZONE BREAKDOWN (${totalZones} total zones, ${completedZones} completed):
 ${zoneBreakdown.map(z => `- ${z.name}: ${z.progress}% (${z.status})`).join('\n')}
 
 Please create a shareholder-friendly video report that covers:
-1. Executive Summary - Quick overview of project status
+1. Executive Summary - Quick overview of project status and financial position
 2. Progress Highlights - What has been accomplished
 3. Current Phase Details - Where we are in the construction timeline
-4. Budget Status - Financial overview (use the provided budget)
+4. Budget Status - Financial overview and cost analysis
 5. Timeline Analysis - Are we on track? Days remaining assessment
-6. Zone-by-Zone Progress - Detail each construction zone
-7. Risk Assessment - Any concerns or blockers
-8. Next Steps - Upcoming milestones and what to expect
-9. Conclusion - Summary and confidence level for on-time completion
+6. Financial Impact - CRITICAL: Emphasize money saved if ahead of schedule OR potential cost overruns if behind schedule
+7. Zone-by-Zone Progress - Detail each construction zone
+8. Risk Assessment - Any concerns or blockers that could cause delays
+9. Cost Mitigation Strategies - If behind, what steps to minimize additional costs
+10. Next Steps - Upcoming milestones and what to expect
+11. Conclusion - Summary with financial outlook and confidence level for on-time completion
+
+IMPORTANT: Pay special attention to the financial impact section. If the project is ahead of schedule, highlight the cost savings prominently as a positive achievement. If behind schedule, clearly communicate the financial risks and urgency of getting back on track.
 
 Make it professional, data-driven, and suitable for executive stakeholders and investors.
-Use clear visuals, charts concepts, and maintain an optimistic but honest tone.
+Use clear visuals, charts concepts, and maintain an optimistic but honest tone about both progress and financial implications.
 `
 
     // Call Opennote API

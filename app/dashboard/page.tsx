@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 import { ProjectCard } from "@/components/dashboard/project-card"
 import { EmptyState } from "@/components/dashboard/empty-state"
+import { FloatingBackground } from "@/components/3d/floating-background"
 import { Loader2 } from 'lucide-react'
 import type { Project } from '@/lib/supabase'
 
@@ -30,9 +31,11 @@ export default function DashboardPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-muted/20">
-      <DashboardHeader />
-      <main className="container mx-auto px-4 py-8">
+    <div className="min-h-screen relative">
+      <FloatingBackground />
+      <div className="relative z-10 bg-background/50 backdrop-blur-sm min-h-screen">
+        <DashboardHeader />
+        <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-foreground mb-1">Your Projects</h1>
           <p className="text-muted-foreground">Track and manage your construction progress</p>
@@ -51,7 +54,8 @@ export default function DashboardPage() {
             ))}
           </div>
         )}
-      </main>
+        </main>
+      </div>
     </div>
   )
 }

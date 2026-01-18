@@ -46,12 +46,6 @@ export function ProgressChart({ project }: ProgressChartProps) {
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data}>
-              <defs>
-                <linearGradient id="progressGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--accent))" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="hsl(var(--accent))" stopOpacity={0} />
-                </linearGradient>
-              </defs>
               <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
               <XAxis dataKey="date" tick={{ fontSize: 12 }} className="text-muted-foreground" />
               <YAxis
@@ -64,7 +58,7 @@ export function ProgressChart({ project }: ProgressChartProps) {
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     return (
-                      <div className="bg-card border border-border rounded-lg px-3 py-2 shadow-lg">
+                      <div className="bg-card border-2 border-accent rounded-lg px-3 py-2 shadow-xl">
                         <p className="text-sm font-medium text-foreground">{payload[0].payload.date}</p>
                         <p className="text-sm text-muted-foreground">
                           Progress: <span className="font-medium text-accent">{payload[0].value}%</span>
@@ -79,8 +73,8 @@ export function ProgressChart({ project }: ProgressChartProps) {
                 type="monotone"
                 dataKey="progress"
                 stroke="hsl(var(--accent))"
-                strokeWidth={2}
-                fill="url(#progressGradient)"
+                strokeWidth={3}
+                fill="hsl(var(--accent) / 0.2)"
               />
             </AreaChart>
           </ResponsiveContainer>

@@ -1,6 +1,6 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Building2 } from "lucide-react"
 import { AuthButton } from "@/components/auth/auth-button"
 
 export function Header() {
@@ -8,9 +8,13 @@ export function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
-            <Building2 className="w-5 h-5 text-primary-foreground" />
-          </div>
+          <Image
+            src="/logo.png"
+            alt="BuildPulse Logo"
+            width={36}
+            height={36}
+            className="w-9 h-9"
+          />
           <span className="font-semibold text-lg text-primary">BuildPulse</span>
         </Link>
         <nav className="hidden md:flex items-center gap-6">

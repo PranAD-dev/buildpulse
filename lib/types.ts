@@ -17,6 +17,7 @@ export interface Project {
   daysUntilDeadline: number
   lastUpdated: string
   estimatedCompletion: string
+  daysEarlyOrLate: number // positive = late, negative = early
   zones: Zone[]
   progressHistory: { date: string; progress: number }[]
   totalBudget: number

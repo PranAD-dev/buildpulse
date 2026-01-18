@@ -135,7 +135,7 @@ export function RoomPanel({
   return (
     <div className="w-96 bg-card border-l border-border flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-border bg-gradient-to-r from-primary/10 to-transparent">
+      <div className="p-4 border-b-2 border-border bg-primary/5">
         <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
           <Home className="w-5 h-5 text-accent" />
           Component Progress Demo

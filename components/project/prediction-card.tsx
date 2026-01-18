@@ -9,6 +9,19 @@ interface PredictionCardProps {
 
 export function PredictionCard({ project }: PredictionCardProps) {
   const isOnTrack = project.status === "on-track"
+  const daysEarlyOrLate = project.daysEarlyOrLate
+
+  // Format the delay/early message
+  const getStatusMessage = () => {
+    if (daysEarlyOrLate === 0) {
+      return "On target"
+    } else if (daysEarlyOrLate < 0) {
+      const days = Math.abs(daysEarlyOrLate)
+      return `${days} ${days === 1 ? 'day' : 'days'} early`
+    } else {
+      return `${daysEarlyOrLate} ${daysEarlyOrLate === 1 ? 'day' : 'days'} late`
+    }
+  }
 
   return (
     <Card className="border-border">
@@ -31,7 +44,7 @@ export function PredictionCard({ project }: PredictionCardProps) {
                   <TrendingUp className="w-5 h-5 text-emerald-600" />
                 </div>
                 <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-200">
-                  5 days early
+                  {getStatusMessage()}
                 </Badge>
               </>
             ) : (
@@ -40,7 +53,7 @@ export function PredictionCard({ project }: PredictionCardProps) {
                   <TrendingDown className="w-5 h-5 text-red-600" />
                 </div>
                 <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-200">
-                  45 days late
+                  {getStatusMessage()}
                 </Badge>
               </>
             )}

@@ -1,4 +1,5 @@
 import { Brain, Calendar, Grid3X3, Video } from "lucide-react"
+import { InteractiveCard } from "@/components/3d/interactive-card"
 
 const features = [
   {
@@ -38,16 +39,15 @@ export function Features() {
         </div>
         <div className="grid md:grid-cols-2 gap-6">
           {features.map((feature) => (
-            <div
-              key={feature.title}
-              className="bg-card rounded-2xl p-8 border border-border hover:border-accent/30 hover:shadow-lg transition-all"
-            >
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
-                <feature.icon className="w-6 h-6 text-primary" />
+            <InteractiveCard key={feature.title} intensity={10}>
+              <div className="bg-card rounded-2xl p-8 border-2 border-border shadow-lg">
+                <div className="w-14 h-14 rounded-xl bg-primary flex items-center justify-center mb-5 shadow-md">
+                  <feature.icon className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-foreground mb-3">{feature.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">{feature.title}</h3>
-              <p className="text-muted-foreground">{feature.description}</p>
-            </div>
+            </InteractiveCard>
           ))}
         </div>
       </div>
