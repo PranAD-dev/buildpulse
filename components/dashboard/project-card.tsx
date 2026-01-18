@@ -7,7 +7,7 @@ import { ProgressCylinder } from "@/components/3d/progress-cylinder"
 import type { Project } from "@/lib/supabase"
 
 interface ProjectCardProps {
-  project: Project
+  project: Project & { isDelayed?: boolean }
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
@@ -20,8 +20,8 @@ export function ProjectCard({ project }: ProjectCardProps) {
     ? Math.ceil((new Date(project.target_completion_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
     : null
 
-  // Determine status based on progress and deadline
-  const isOnTrack = daysUntilDeadline ? daysUntilDeadline > 0 : true
+  // Use isDelayed from props if provided, otherwise fallback to deadline check
+  const isOnTrack = project.isDelayed !== undefined ? !project.isDelayed : (daysUntilDeadline ? daysUntilDeadline > 0 : true)
 
   // Format last updated
   const lastUpdated = new Date(project.created_at).toLocaleDateString('en-US', {

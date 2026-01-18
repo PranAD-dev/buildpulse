@@ -742,6 +742,14 @@ export function GLBRoomViewer({ modelUrl, projectId, projectName, onExport }: GL
           // Update zone progress in local store
           roomStore.updateProgress(roomId, newProgress)
 
+          // Store full analysis results (visible_completed, still_missing, etc.)
+          roomStore.setAnalysisResult(roomId, {
+            confidence: analysis.confidence,
+            visible_completed: analysis.visible_completed || [],
+            still_missing: analysis.still_missing || [],
+            notes: analysis.notes || '',
+          })
+
           // Save to database
           const dbRoomId = dbRoomIdMapRef.current.get(roomId)
           console.log('Saving progress - Local ID:', roomId, '| DB ID:', dbRoomId, '| Progress:', newProgress)

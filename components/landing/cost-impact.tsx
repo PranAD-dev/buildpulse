@@ -1,4 +1,4 @@
-import { DollarSign, TrendingDown, AlertTriangle, Clock } from "lucide-react"
+import { DollarSign, TrendingDown, AlertTriangle, Clock, ExternalLink } from "lucide-react"
 import { ScrollReveal } from "@/components/ui/scroll-reveal"
 
 export function CostImpact() {
@@ -110,6 +110,45 @@ export function CostImpact() {
               <p className="text-xs text-muted-foreground mt-1">Average savings per project</p>
             </div>
           </div>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal delay={500} className="mt-12">
+          <div className="bg-muted/50 rounded-xl border border-border p-6">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 text-center">
+              Research Sources
+            </p>
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
+              <a
+                href="https://www.researchgate.net/publication/263506757_A_System_to_Track_Work_Progress_at_Construction_Jobsites"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 hover:text-primary transition-colors underline decoration-dotted underline-offset-2"
+              >
+                <ExternalLink className="w-3 h-3" />
+                Construction Progress Tracking Research
+              </a>
+              <span className="text-border">|</span>
+              <a
+                href="https://www.digitalconstructionweek.com/why-construction-projects-still-struggle-with-failure-costs/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 hover:text-primary transition-colors underline decoration-dotted underline-offset-2"
+              >
+                <ExternalLink className="w-3 h-3" />
+                Construction Project Failure Costs
+              </a>
+              <span className="text-border">|</span>
+              <a
+                href="https://www.unep.org/resources/report/building-materials-and-climate-constructing-new-future"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 hover:text-primary transition-colors underline decoration-dotted underline-offset-2"
+              >
+                <ExternalLink className="w-3 h-3" />
+                UNEP Building Materials Report
+              </a>
+            </div>
           </div>
         </ScrollReveal>
       </div>
