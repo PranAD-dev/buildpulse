@@ -1,4 +1,4 @@
-# BuildPulse 🏗️
+# BuildPulse 
 
 **AI-powered construction progress tracking that turns weeks of delays into actionable insights.**
 
